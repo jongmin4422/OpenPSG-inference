@@ -165,6 +165,7 @@ def multiclass_nms_alt(
     else:
         return torch.cat([bboxes, scores[:, None]], 1), labels.view(-1)
 
+
 CLASSES = [
     'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train',
     'truck', 'boat', 'traffic light', 'fire hydrant', 'stop sign',
@@ -262,7 +263,7 @@ def show_result(img,
     img = mmcv.imread(img)
     img = img.copy()  # (H, W, 3)
     img_h, img_w = img.shape[:-1]
-    
+
     # Decrease contrast
     img = PIL.Image.fromarray(img)
     converter = PIL.ImageEnhance.Color(img)
@@ -282,7 +283,7 @@ def show_result(img,
     labels = np.array([id % INSTANCE_OFFSET for id in ids], dtype=np.int64)
     labels = [CLASSES[l] for l in labels]
 
-    #For psgtr
+    # For psgtr
     rel_obj_labels = result.labels
     rel_obj_labels = [CLASSES[l - 1] for l in rel_obj_labels]
 
@@ -296,7 +297,8 @@ def show_result(img,
     masks = result.masks
 
     # Choose colors for each instance in coco
-    colormap_coco = get_colormap(len(masks)) if is_one_stage else get_colormap(len(segms))
+    colormap_coco = get_colormap(
+        len(masks)) if is_one_stage else get_colormap(len(segms))
     colormap_coco = (np.array(colormap_coco) / 255).tolist()
 
     # Viualize masks
@@ -326,7 +328,7 @@ def show_result(img,
     relations = np.concatenate(
         [rel_pair_idxes_topk, rel_labels_topk[..., None]], axis=1)
     n_rels = len(relations)
-    
+
     top_padding = 20
     bottom_padding = 20
     left_padding = 20
@@ -339,11 +341,11 @@ def show_result(img,
     width = img_w
     curr_x = left_padding
     curr_y = top_padding
-    
+
     # # Adjust colormaps
     # colormap_coco = [adjust_text_color(c, viz) for c in colormap_coco]
     viz_graph = VisImage(np.full((height, width, 3), 255))
-    
+
     for i, r in enumerate(relations):
         s_idx, o_idx, rel_id = r
         s_label = rel_obj_labels[s_idx]
@@ -400,7 +402,8 @@ def show_result(img,
         )
         output_viz_graph = np.vstack([viz_masked_img, viz_graph.get_image()])
         if out_file is not None:
-            mmcv.imwrite(output_viz_graph, osp.join(out_dir, '{}.jpg'.format(i)))
+            mmcv.imwrite(output_viz_graph, osp.join(
+                out_dir, '{}.jpg'.format(i)))
 
     # if out_file is not None:
     #     mmcv.imwrite(output_viz_graph, out_file)

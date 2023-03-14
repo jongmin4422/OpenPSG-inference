@@ -28,7 +28,7 @@ def parse_args():
     parser.add_argument('checkpoint', help='checkpoint file')
     parser.add_argument(
         '--work-dir',
-        help='the directory to save the file containing evaluation metrics')
+        help='the directory to save the file containing evaluation metrics', default='work_dirs/checkpoints/')
     parser.add_argument('--out', help='output result file in pickle format')
     parser.add_argument(
         '--fuse-conv-bn',
@@ -91,12 +91,14 @@ def parse_args():
     parser.add_argument(
         '--submit',
         action='store_true',
-        help=
-        'save output to a json file and save the panoptic mask as a png image into a folder for grading purpose'
+        help='save output to a json file and save the panoptic mask as a png image into a folder for grading purpose'
     )
 
     parser.add_argument('--local_rank', type=int, default=0)
+    parser.add_argument('--dataset_type-coco_root',
+                        type=str, default='../dataset/coco')
     args = parser.parse_args()
+    print(args)
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
 
