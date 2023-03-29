@@ -252,13 +252,7 @@ PREDICATES = [
 ]
 
 
-def show_result(img,
-                result,
-                is_one_stage,
-                num_rel=20,
-                show=False,
-                out_dir=None,
-                out_file=None):
+def show_result(img, result, is_one_stage, num_rel=20, show=False, show_rel=False, out_dir=None, out_file=None, infer=False):
     # Load image
     img = mmcv.imread(img)
     img = img.copy()  # (H, W, 3)
@@ -309,16 +303,21 @@ def show_result(img,
         assigned_colors=colormap_coco,
     )
     viz_img = viz.get_output().get_image()
-    if out_file is not None:
-        mmcv.imwrite(viz_img, out_file)
+    if show:
+        plt.imshow(viz_img)
+    # if out_file is not None:
+    #     mmcv.imwrite(viz_img, out_file)
 
     # Draw relations
 
-    # Filter out relations
-    n_rel_topk = num_rel
     # Exclude background class
     rel_dists = result.rel_dists[:, 1:]
     # rel_dists = result.rel_dists
+    # Filter out relations
+    if len(rel_dists) < num_rel:
+        n_rel_topk = len(rel_dists)
+    else:
+        n_rel_topk = num_rel
     rel_scores = rel_dists.max(1)
     # rel_scores = result.triplet_scores
     # Extract relations with top scores
@@ -345,12 +344,15 @@ def show_result(img,
     # # Adjust colormaps
     # colormap_coco = [adjust_text_color(c, viz) for c in colormap_coco]
     viz_graph = VisImage(np.full((height, width, 3), 255))
-
+    text_relations = []
     for i, r in enumerate(relations):
         s_idx, o_idx, rel_id = r
         s_label = rel_obj_labels[s_idx]
         o_label = rel_obj_labels[o_idx]
         rel_label = PREDICATES[rel_id]
+        if show_rel:
+            print(s_label, rel_label, o_label)
+        text_relations.append([s_label, rel_label, o_label])
         viz = Visualizer(img)
         viz.overlay_instances(
             labels=[s_label, o_label],
@@ -407,11 +409,10 @@ def show_result(img,
 
     # if out_file is not None:
     #     mmcv.imwrite(output_viz_graph, out_file)
-
+    if infer:
+        return viz_img, labels, text_relations
     if not (show or out_file):
         return viz_final
-
-
 # def multiclass_nms_alt(
 #     multi_bboxes,
 #     multi_scores,
