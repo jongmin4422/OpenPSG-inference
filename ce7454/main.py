@@ -90,7 +90,7 @@ check_metrics = test_evaluator.eval_recall(val_dataloader)
 if best_val_recall == check_metrics['mean_recall']:
     print('Successfully load best checkpoint with acc {:.2f}'.format(
         100 * best_val_recall),
-          flush=True)
+        flush=True)
 else:
     print('Fail to load best checkpoint')
 result = test_evaluator.submit(test_dataloader)

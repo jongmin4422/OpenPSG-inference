@@ -7,7 +7,6 @@ import warnings
 
 import mmcv
 import torch
-from grade import save_results
 from mmcv import Config, DictAction
 from mmcv.cnn import fuse_conv_bn
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
@@ -19,6 +18,7 @@ from mmdet.models import build_detector
 
 from openpsg.datasets import build_dataset
 from grade import save_results
+# from grade import save_results
 
 
 def parse_args():
